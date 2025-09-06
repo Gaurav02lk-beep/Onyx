@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go - Celestial Onyx</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0KOVEMVIARBEKsPDc1Cwo9zTRNsEsPWBIkuLmdVmf4AbaKSCuzQLz" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlVwcpaNlchBQDfuIpi9eqIG9NlJN8MMzGnJUMasqsaxMqrYN6em7kHLBqF" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+  <style>
+    /* Custom scrollbar for webkit browsers - Celestial Onyx Theme */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #101018; /* Dark Charcoal */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #303038; /* Medium Grey */
+      border-radius: 5px;
+      border: 2px solid #181820; /* Darker Charcoal */
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B08D57; /* Old Gold */
+    }
+
+    /* Custom scrollbar for code blocks - Celestial Onyx Theme */
+    .code-block-scrollbar-celestial::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    .code-block-scrollbar-celestial::-webkit-scrollbar-track {
+      background: rgba(10, 10, 15, 0.5); 
+    }
+    .code-block-scrollbar-celestial::-webkit-scrollbar-thumb {
+      background: #505058; /* Darker Grey */
+      border-radius: 3.5px;
+    }
+    .code-block-scrollbar-celestial::-webkit-scrollbar-thumb:hover {
+      background: #B08D57; /* Old Gold */
+    }
+    
+    /* Custom scrollbar for suggestions dropdown - Celestial Onyx Theme */
+    .custom-scrollbar-suggestions-celestial::-webkit-scrollbar {
+      width: 7px;
+    }
+    .custom-scrollbar-suggestions-celestial::-webkit-scrollbar-track {
+      background: rgba(5, 5, 10, 0.4); /* Very Dark Blue/Black tint */
+      border-radius: 3.5px;
+    }
+    .custom-scrollbar-suggestions-celestial::-webkit-scrollbar-thumb {
+      background: #A07D47; /* Muted Gold */
+      border-radius: 3.5px;
+    }
+    .custom-scrollbar-suggestions-celestial::-webkit-scrollbar-thumb:hover {
+      background: #B08D57; /* Brighter Old Gold */
+    }
+
+    /* KaTeX display formula styling */
+    .katex-display {
+        margin: 1.2em 0;
+        padding: 0.8em;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: #505058 #202028;
+        border-radius: 0.5rem;
+        background-color: rgba(0,0,5,0.2);
+    }
+    .katex-display::-webkit-scrollbar {
+        height: 8px;
+    }
+    .katex-display::-webkit-scrollbar-track {
+        background: rgba(10, 10, 15, 0.5);
+    }
+    .katex-display::-webkit-scrollbar-thumb {
+        background: #505058;
+        border-radius: 4px;
+    }
+    .katex-display::-webkit-scrollbar-thumb:hover {
+        background: #B08D57;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      /* Deep onyx, charcoal, with hints of deep sapphire/amethyst */
+      background: linear-gradient(230deg, #0A0A0F, #05050A, #101018, #080815, #12121A, #030308, #000005);
+      background-size: 600% 600%; 
+      animation: animate-celestial-gradient 60s ease infinite; /* Slower animation */
+      overflow-x: hidden;
+    }
+    html, body, #root {
+      min-height: 100vh;
+      position: relative; /* For particle container positioning */
+    }
+
+    #particle-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      will-change: transform, opacity;
+    }
+    
+    /* Re-themed particles for Celestial Onyx */
+    .particle.celestial-dust-drift { /* Soft, slow gold/off-white dust */
+        background-color: rgba(210, 180, 140, 0.05); /* Pale Gold/Linen, very transparent */
+        animation-name: particle-dust-celestial; 
+        border-radius: 50%;
+    }
+    .particle.ether-whisps-drift { /* Very subtle, slow-fading deep blue/amethyst shapes */
+        background-color: rgba(75, 0, 130, 0.03); /* Indigo/Amethyst, extremely transparent */
+        animation-name: particle-whisps-celestial;
+        border-radius: 40% 60% 70% 30% / 30% 50% 50% 70%; /* Amorphous shape */
+    }
+    .particle.comet-trails-streak { /* Rare, faint, slow streaks of light gold */
+        height: 0.8px; 
+        width: 120px; 
+        border-radius: 0.4px;
+        background: linear-gradient(to right, transparent, rgba(200, 160, 100, 0.2), transparent); /* Faint Gold */
+        animation-name: particle-trails-celestial;
+    }
+    .particle.star-gleam-pulse { /* Small, slowly pulsing points of pale gold light */
+        background-color: rgba(230, 210, 170, 0.15); /* Pale Gold */
+        animation-name: particle-gleam-celestial;
+        border-radius: 50%;
+        box-shadow: 0 0 5px rgba(230, 210, 170, 0.1);
+    }
+
+    @keyframes particle-dust-celestial { 
+      0% { transform: translateY(0) translateX(0) scale(0.7) rotate(0deg); opacity: 0; }
+      25% { opacity: 0.04; transform: translateX(calc(8vw * var(--direction-x, 1))) scale(0.6) rotate(15deg); }
+      50% { transform: translateY(calc(-60vh + var(--offset-y, 0px))) translateX(calc(15vw * var(--direction-x, 1))) scale(0.5) rotate(30deg); opacity: 0.06; }
+      75% { opacity: 0.03; transform: translateX(calc(22vw * var(--direction-x, 1))) scale(0.6) rotate(45deg); }
+      100% { transform: translateY(calc(-120vh + var(--offset-y, 0px))) translateX(calc(30vw * var(--direction-x, 1))) scale(0.7) rotate(60deg); opacity: 0; }
+    }
+    
+    @keyframes particle-whisps-celestial { 
+      0%, 100% { opacity: 0; transform: scale(0.8) translateY(0) translateX(0) rotate(0deg); }
+      10% { opacity: 0.02; transform: scale(1) translateY(calc(-3vh * var(--direction-y, 1))) translateX(calc(1vw * var(--direction-x, 1))) rotate(10deg); }
+      50% { opacity: 0.03; transform: scale(1.2) translateY(calc(-25vh * var(--direction-y, 1))) translateX(calc(-2vw * var(--direction-x, 1))) rotate(-15deg); }
+      90% { opacity: 0.01; transform: scale(0.9) translateY(calc(-45vh * var(--direction-y, 1))) translateX(calc(0.5vw * var(--direction-x, 1))) rotate(5deg); }
+    }
+
+    @keyframes particle-trails-celestial { 
+      0% { transform: translateX(-250px) translateY(0) scaleX(0.1) rotate(var(--angle, 25deg)); opacity: 0; }
+      20% { opacity: 0.2; transform: scaleX(0.8); }
+      80% { opacity: 0.2; transform: scaleX(0.8); }
+      100% { transform: translateX(calc(100vw * var(--direction-x, 1) + 250px)) translateY(calc(20vh * var(--direction-y, 1))) scaleX(0.1) rotate(var(--angle, 25deg)); opacity: 0; }
+    }
+
+    @keyframes particle-gleam-celestial { 
+        0%, 100% { opacity: 0.08; transform: scale(0.7); filter: brightness(0.7); }
+        50% { opacity: 0.15; transform: scale(1); filter: brightness(1); }
+    }
+
+    @keyframes animate-celestial-gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes shimmer-celestial { /* Gold/Bronze/Silver Shimmer */
+      0% { background-position: -250% center; }
+      100% { background-position: 250% center; }
+    }
+    .animate-shimmer-celestial {
+      background-size: 250% auto;
+      animation: shimmer-celestial 5s linear infinite; /* Slower */
+    }
+    
+    @keyframes gentle-glow-celestial { /* Subtle Gold/Soft Blue Glow */
+      0%, 100% { opacity: 0.8; transform: scale(1); filter: brightness(1) saturate(1); }
+      50% { opacity: 1; transform: scale(1.05); filter: brightness(1.15) saturate(1.2); }
+    }
+    .animate-gentle-glow-celestial {
+        animation: gentle-glow-celestial 3.5s infinite ease-in-out; /* Slower */
+    }
+    
+    @keyframes fade-scale-in-celestial { /* Smooth fade-in with slight scale */
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(5px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+    }
+    .animate-fade-scale-in-celestial {
+      animation: fade-scale-in-celestial 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Smoother easing */
+    }
+    
+    @keyframes elegant-fade-in-down { /* Slower, smoother fade-in from top */
+      0% { opacity: 0; transform: translateY(-25px); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0px); }
+    }
+    .animate-elegant-fade-in-down {
+      animation: elegant-fade-in-down 1.5s ease-out forwards; /* Slower */
+    }
+
+    @keyframes button-press-celestial { /* Subtle scale and inset effect */
+      0% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+      50% { transform: scale(0.96); box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.1); } 
+      100% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    }
+    .active\:animate-button-press-celestial:active {
+        animation: button-press-celestial 0.2s ease-out;
+    }
+    
+    @keyframes text-subtle-glow-celestial { /* Very gentle off-white/pale gold glow */
+      0%, 100% { opacity: 0.85; text-shadow: 0 0 5px rgba(220, 200, 160, 0.3); } /* Pale Gold */
+      50% { opacity: 1; text-shadow: 0 0 10px rgba(230, 210, 180, 0.5); } /* Brighter Pale Gold */
+    }
+    .animate-text-subtle-glow-celestial {
+      animation: text-subtle-glow-celestial 2.5s infinite ease-in-out; /* Slower */
+    }
+
+    @keyframes refined-edge-celestial { /* Thin, glowing gold/bronze border */
+        0% { border-color: rgba(176, 141, 87, 0.4); box-shadow: 0 0 8px rgba(176, 141, 87, 0.15), inset 0 0 4px rgba(160, 120, 70, 0.1); } /* Gold/Bronze */
+        50% { border-color: rgba(200, 160, 100, 0.55); box-shadow: 0 0 12px rgba(200, 160, 100, 0.25), inset 0 0 6px rgba(180, 140, 90, 0.15); } /* Brighter Gold/Bronze */
+        100% { border-color: rgba(176, 141, 87, 0.4); box-shadow: 0 0 8px rgba(176, 141, 87, 0.15), inset 0 0 4px rgba(160, 120, 70, 0.1); }
+    }
+    .animate-refined-edge-celestial {
+        animation: refined-edge-celestial 5s infinite linear; /* Slower */
+        border-width: 1px; 
+        border-style: solid;
+    }
+    .animate-refined-edge-focus { /* More intense for SearchBar focus */
+        animation: refined-edge-celestial 4s infinite linear; 
+        border-width: 1.5px; /* Slightly thicker */
+        border-style: solid;
+    }
+    
+    @keyframes aura-glow-celestial { /* Soft, diffused outer glow */
+      0% { box-shadow: 0 0 12px rgba(176, 141, 87, 0.08), 0 0 4px rgba(176, 141, 87, 0.05) inset; border-color: rgba(176, 141, 87, 0.15); } /* Gold tint */
+      50% { box-shadow: 0 0 20px rgba(200, 160, 100, 0.12), 0 0 8px rgba(200, 160, 100, 0.08) inset; border-color: rgba(200, 160, 100, 0.2); } /* Brighter Gold tint */
+      100% { box-shadow: 0 0 12px rgba(176, 141, 87, 0.08), 0 0 4px rgba(176, 141, 87, 0.05) inset; border-color: rgba(176, 141, 87, 0.15); }
+    }
+    .animate-aura-glow-celestial {
+        animation: aura-glow-celestial 8s infinite ease-in-out; /* Slower */
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    @keyframes narrator-active-celestial-pulse { /* Softer pulse with gold/blue aura */
+        0%, 100% {
+            filter: drop-shadow(0 0 6px rgba(176, 141, 87, 0.5)) drop-shadow(0 0 15px rgba(176, 141, 87, 0.4)); /* Gold */
+            transform: scale(1);
+        }
+        50% {
+            filter: drop-shadow(0 0 12px rgba(100, 149, 237, 0.6)) drop-shadow(0 0 25px rgba(100, 149, 237, 0.5)); /* Cornflower Blue */
+            transform: scale(1.03);
+        }
+    }
+    .narrator-active-celestial-pulse {
+        animation: narrator-active-celestial-pulse 2.2s infinite ease-in-out; /* Slower */
+    }
+
+    @keyframes oracle-idle-celestial { /* Slower, more fluid idle */
+        0%, 100% { transform: translateY(0px) scale(1); opacity: 0.85; }
+        50% { transform: translateY(-2px) scale(1.005); opacity: 0.95; }
+    }
+    .animate-oracle-idle-celestial {
+      animation: oracle-idle-celestial 7s infinite ease-in-out; /* Slower */
+    }
+    @keyframes oracle-speaking-celestial {  /* Slower, more fluid speaking */
+      0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); filter: brightness(1); }
+      33% { transform: translateY(-3px) scale(1.02) rotate(-0.5deg); filter: brightness(1.1); }
+      66% { transform: translateY(-1px) scale(0.995) rotate(0.25deg); filter: brightness(0.98); }
+    }
+    .animate-oracle-speaking-celestial {
+      animation: oracle-speaking-celestial 2s infinite ease-in-out; /* Slower */
+    }
+
+    @keyframes ripple-celestial { /* Subtle outward gold ripple for Search Button Press */
+      0% { box-shadow: 0 0 0 0 rgba(200, 160, 100, 0.6); opacity: 1; } /* Gold */
+      100% { box-shadow: 0 0 0 25px rgba(176, 141, 87, 0); opacity: 0; } /* Fades out */
+    }
+    .active\:animate-ripple-celestial:active {
+        animation: ripple-celestial 0.4s ease-out;
+    }
+
+    @keyframes searchbar-elegant-entrance { /* Smoother activation */
+      from { opacity: 0; transform: scale(0.92) translateY(25px); filter: blur(3px); }
+      to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+    }
+    .searchbar-elegant-entrance-anim {
+      animation: searchbar-elegant-entrance 1.1s cubic-bezier(0.3, 0.7, 0.4, 1) forwards; /* Smoother easing */
+    }
+
+    @keyframes search-element-elegant-entrance { /* Smoother activation for child elements */
+      from { opacity: 0; transform: translateY(15px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Styles for highlight.js code blocks - Celestial Onyx Theme */
+    .prose pre, pre {
+      background-color: rgba(10, 10, 18, 0.95) !important; /* Very dark grey/onyx, almost black */
+      backdrop-filter: blur(12px);
+      color: #D0D0D0 !important; /* Light grey/off-white */
+      padding: 1.7em !important;
+      margin-top: 2em;
+      margin-bottom: 2em;
+      border-radius: 0.75rem !important; 
+      overflow-x: auto !important;
+      border: 1px solid rgba(176, 141, 87, 0.25) !important; /* Subtle Gold/Bronze border */
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 5px 10px rgba(0,0,0,0.3);
+    }
+    .custom-code-block-wrapper-celestial pre { 
+        background-color: transparent !important;
+        padding: 1.7rem !important;
+        padding-top: 3rem !important; 
+        margin: 0 !important;
+        border-radius: 0 0 0.75rem 0.75rem !important;
+        box-shadow: none !important;
+    }
+
+    .prose code::before, .prose code::after { content: "" !important; }
+    .prose :not(pre) > code, :not(pre) > code {
+        background-color: rgba(176, 141, 87, 0.1) !important; /* Pale Gold bg */
+        color: #D4AF37 !important; /* Soft Gold text */
+        padding: 0.3em 0.55em !important;
+        border-radius: 0.3rem !important;
+        font-size: 0.85em !important;
+        border: 1px solid rgba(176, 141, 87, 0.2); /* Soft Gold border */
+    }
+
+    @keyframes suggestions-bloom-in-celestial { 
+        0% { opacity: 0; transform: translateY(-15px) scaleY(0.85) scaleX(0.92); filter: blur(4px); }
+        100% { opacity: 1; transform: translateY(0) scaleY(1) scaleX(1); filter: blur(0px); }
+    }
+    .suggestions-dropdown-celestial {
+      animation: suggestions-bloom-in-celestial 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      transform-origin: top center;
+    }
+
+    /* Glassmorphism - Celestial Onyx Card (Smoked Glass) */
+    .celestial-onyx-card {
+      background-color: rgba(15, 15, 22, 0.7); /* Dark Charcoal/Onyx tint */
+      backdrop-filter: blur(20px) saturate(120%);
+      -webkit-backdrop-filter: blur(20px) saturate(120%);
+      border: 1px solid rgba(176, 141, 87, 0.2); /* Subtle Gold/Bronze edge */
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.55), inset 0 0 10px rgba(176, 141, 87, 0.05); /* Soft shadow, subtle inner gold glow */
+    }
+     .search-bar-celestial-onyx { /* Slightly more opaque */
+      background-color: rgba(8, 8, 12, 0.8); 
+      backdrop-filter: blur(25px) saturate(110%);
+      -webkit-backdrop-filter: blur(25px) saturate(110%);
+      border: 1px solid rgba(176, 141, 87, 0.3); /* Gold/Bronze edge */
+      box-shadow: 0 18px 60px rgba(0,0,0,0.65), inset 0 0 8px rgba(176, 141, 87, 0.08); 
+    }
+    .search-bar-input-inset-celestial { /* Dark, smooth inset */
+        background: rgba(5, 5, 8, 0.7);
+        border: 1px solid rgba(50, 50, 60, 0.5); /* Dark grey border */
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    /* Highlight.js Celestial Onyx Theme Adjustments */
+    .hljs-comment, .hljs-quote { color: #707080; } /* Medium Grey */
+    .hljs-keyword, .hljs-selector-tag, .hljs-subst { color: #D4AF37; } /* Soft Gold/Amber */
+    .hljs-number, .hljs-literal, .hljs-variable, .hljs-template-variable, .hljs-tag .hljs-attr { color: #B87333; } /* Muted Copper/Bronze */
+    .hljs-string, .hljs-doctag { color: #70A0AF; } /* Muted Teal/Sapphire */
+    .hljs-title, .hljs-section, .hljs-selector-id { color: #E0C070; } /* Light Gold */
+    .hljs-type, .hljs-class .hljs-title { color: #87CEEB; } /* Sky Blue / Light Sapphire */
+    .hljs-attribute { color: #AF9B7D; } /* Muted Brass/Khaki */
+    .hljs-name, .hljs-built_in, .hljs-builtin-name { color: #C0C0C0; } /* Silver */
+    .hljs-params { color: #D8BFD8; } /* Thistle/Light Amethyst */
+    .hljs-bullet, .hljs-link, .hljs-symbol, .hljs-meta { color: #9B87B0; } /* Soft Amethyst */
+    .hljs-emphasis { font-style: italic; }
+    .hljs-strong { font-weight: bold; }
+
+    /* Text Selection */
+    ::selection {
+      background-color: #B08D57; /* Old Gold */
+      color: #101018; /* Dark Charcoal */
+    }
+    ::-moz-selection { /* Firefox */
+      background-color: #B08D57;
+      color: #101018;
+    }
+
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.1.0",
+    "@/App": "./App.tsx"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="text-slate-300"> <!-- Default text color changed for better contrast on dark bg -->
+  <div id="particle-container">
+    <!-- Celestial Dust Drift (Soft Gold) -->
+    <div class="particle celestial-dust-drift" style="width: 1.5px; height: 1.5px; top: 20%; left: 10%; animation-duration: 80s; animation-delay: -5s; --offset-y: 10vh; --direction-x: 0.5;"></div>
+    <div class="particle celestial-dust-drift" style="width: 2px; height: 2px; top: 70%; left: 80%; animation-duration: 90s; animation-delay: -20s; --offset-y: -15vh; --direction-x: -0.7;"></div>
+    <div class="particle celestial-dust-drift" style="width: 1px; height: 1px; top: 40%; left: 45%; animation-duration: 85s; animation-delay: -35s; --offset-y: 5vh; --direction-x: 1; background-color: rgba(220, 190, 150, 0.06);"></div>
+
+    <!-- Ether Whisps Drift (Deep Blue/Amethyst) -->
+    <div class="particle ether-whisps-drift" style="width: 150px; height: 200px; top: 15%; left: 75%; animation-duration: 120s; animation-delay: -10s; --direction-y: 0.3; background-color: rgba(60, 30, 100, 0.02);"></div>
+    <div class="particle ether-whisps-drift" style="width: 200px; height: 180px; top: 60%; left: 15%; animation-duration: 130s; animation-delay: -40s; --direction-y: -0.2;"></div>
+    
+    <!-- Comet Trails Streak (Faint Gold) - Sparse -->
+    <div class="particle comet-trails-streak" style="top: 15%; left: 0%; animation-duration: 12s; animation-delay: -3s; --direction-x: 1; --direction-y: 0.1; --angle: 20deg; width: 100px;"></div>
+    <div class="particle comet-trails-streak" style="top: 65%; left: 0%; animation-duration: 15s; animation-delay: -10s; --direction-x: 0.8; --direction-y: -0.15; --angle: 30deg; width: 150px; background: linear-gradient(to right, transparent, rgba(210,170,110,0.25), transparent);"></div>
+
+    <!-- Star Gleam Pulse (Pale Gold) -->
+    <div class="particle star-gleam-pulse" style="width: 2.5px; height: 2.5px; top: 25%; left: 30%; animation-duration: 8s; animation-delay: -1.5s;"></div>
+    <div class="particle star-gleam-pulse" style="width: 3px; height: 3px; top: 75%; left: 70%; animation-duration: 7s; animation-delay: -3s; background-color: rgba(235, 215, 180, 0.2);"></div>
+    <div class="particle star-gleam-pulse" style="width: 2px; height: 2px; top: 50%; left: 90%; animation-duration: 9s; animation-delay: -0.5s;"></div>
+  </div>
+  <div id="root" class="flex flex-col relative z-10"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

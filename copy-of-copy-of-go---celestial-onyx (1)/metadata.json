@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Copy of Go - Celestial Onyx",
+  "description": "Go - Celestial Onyx: Navigate the cosmos of information. An AI conduit for text, voice, and image queries, styled with timeless elegance. Powered by Google Gemini.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "prompt": ""
+}
