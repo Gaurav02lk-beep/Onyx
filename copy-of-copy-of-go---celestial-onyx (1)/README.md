@@ -1,8 +1,8 @@
 
 
-# Run and deploy your AI Studio app
+# Run and deploy your AI powered Search engine Onyx
 
-This contains everything you need to run your app locally.
+This contains everything you need to run your searech engine locally.
 
 
 
